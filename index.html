@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBM Calculator Pro</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7f9;
+  color:#172635;
+}
+header{
+  background:#172635;
+  color:white;
+  padding:22px 18px;
+  text-align:center;
+}
+header h1{margin:0;font-size:24px}
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:white;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+h2{margin-top:0}
+label{
+  display:block;
+  margin-top:14px;
+  margin-bottom:6px;
+  font-weight:bold;
+}
+input,select{
+  width:100%;
+  padding:14px;
+  border:1px solid #d5dce2;
+  border-radius:10px;
+  font-size:16px;
+}
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+}
+button{
+  width:100%;
+  border:0;
+  border-radius:12px;
+  padding:15px;
+  margin-top:18px;
+  background:#d99a28;
+  color:white;
+  font-size:17px;
+  font-weight:bold;
+}
+.result{
+  background:#172635;
+  color:white;
+  border-radius:15px;
+  padding:20px;
+  text-align:center;
+}
+.result strong{
+  display:block;
+  font-size:32px;
+  margin-top:8px;
+}
+.small{
+  color:#697784;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>CBM Calculator Pro</h1>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>📦 Calculate Shipment Volume</h2>
+    <p class="small">Enter the dimensions of your goods.</p>
+
+    <label>Length</label>
+    <input id="length" type="number" placeholder="Enter length">
+
+    <label>Width</label>
+    <input id="width" type="number" placeholder="Enter width">
+
+    <label>Height</label>
+    <input id="height" type="number" placeholder="Enter height">
+
+    <label>Unit</label>
+    <select id="unit">
+      <option value="cm">Centimetres (cm)</option>
+      <option value="m">Metres (m)</option>
+      <option value="in">Inches (in)</option>
+      <option value="ft">Feet (ft)</option>
+    </select>
+
+    <label>Quantity</label>
+    <input id="quantity" type="number" value="1" min="1">
+
+    <button onclick="calculateCBM()">CALCULATE CBM</button>
+  </div>
+
+  <div class="result">
+    <div>Total Volume</div>
+    <strong id="result">0.000 m³</strong>
+  </div>
+
+  <div class="card">
+    <h2>🚢 Container Guide</h2>
+
+    <label>Container</label>
+    <select id="container">
+      <option value="28">20ft Container — 28 m³</option>
+      <option value="58">40ft Container — 58 m³</option>
+      <option value="68">40ft High Cube — 68 m³</option>
+    </select>
+
+    <button onclick="calculateContainer()">CHECK CONTAINER</button>
+
+    <p id="containerResult" class="small"></p>
+  </div>
+
+</div>
+
+<script>
+function calculateCBM(){
+
+  let L = parseFloat(document.getElementById("length").value);
+  let W = parseFloat(document.getElementById("width").value);
+  let H = parseFloat(document.getElementById("height").value);
+  let Q = parseFloat(document.getElementById("quantity").value) || 1;
+  let unit = document.getElementById("unit").value;
+
+  if(!L || !W || !H){
+    alert("Please enter Length, Width and Height.");
+    return;
+  }
+
+  if(unit === "cm"){
+    L /= 100;
+    W /= 100;
+    H /= 100;
+  }
+
+  if(unit === "in"){
+    L *= 0.0254;
+    W *= 0.0254;
+    H *= 0.0254;
+  }
+
+  if(unit === "ft"){
+    L *= 0.3048;
+    W *= 0.3048;
+    H *= 0.3048;
+  }
+
+  let cbm = L * W * H * Q;
+
+  document.getElementById("result").innerText =
+    cbm.toFixed(3) + " m³";
+}
+
+function calculateContainer(){
+
+  let volumeText = document.getElementById("result").innerText;
+  let volume = parseFloat(volumeText);
+
+  if(!volume){
+    alert("Calculate CBM first.");
+    return;
+  }
+
+  let capacity = parseFloat(
+    document.getElementById("container").value
+  );
+
+  let containers = Math.ceil(volume / capacity);
+  let remaining = capacity - (volume % capacity);
+
+  if(volume <= capacity){
+    document.getElementById("containerResult").innerText =
+      "✅ Your goods can fit inside 1 container.";
+  }else{
+    document.getElementById("containerResult").innerText =
+      "📦 You may need approximately " +
+      containers +
+      " containers.";
+  }
+}
+</script>
+
+</body>
+</html>
